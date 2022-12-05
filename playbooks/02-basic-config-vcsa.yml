@@ -1,0 +1,70 @@
+---
+- hosts: localhost
+  name: Basic VCSA Configuration
+  gather_facts: false
+  vars_files: ../answerfile.yml
+
+  tasks:
+    - name: Provide information about vCenter
+      community.vmware.vmware_about_info:
+        hostname: '{{ vcenter_hostname }}'
+        validate_certs: no
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+      delegate_to: localhost
+      register: vcenter_about_info   
+
+    - name: Create vCenter Datacenter
+      community.vmware.vmware_datacenter:
+        validate_certs: no
+        hostname: '{{ vcenter_hostname }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        datacenter_name: '{{ datacenter_name }}'
+        state: present
+      delegate_to: localhost
+
+    - name: Create vCenter Cluster
+      community.vmware.vmware_cluster:
+        validate_certs: no
+        hostname: '{{ vcenter_hostname }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        datacenter_name: '{{ datacenter_name }}'
+        cluster_name: "{{ cluster_name_compute }}"
+      register: cl_result
+      delegate_to: localhost
+
+    - name: Enable HA with admission control reserving 25% of resources for HA
+      community.vmware.vmware_cluster_ha:
+        validate_certs: no
+        hostname: '{{ vcenter_hostname }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        datacenter_name: '{{ datacenter_name }}'
+        cluster_name: "{{ cluster_name_compute }}"
+        enable: true
+        apd_response: disabled
+        pdl_response: disabled
+        advanced_settings: "{u'das.ignoreInsufficientHbDatastore':u'true'}"
+        ha_vm_monitoring: vmMonitoringDisabled
+        reservation_based_admission_control:
+          auto_compute_percentages: False
+          failover_level: 1
+          cpu_failover_resources_percent: 25
+          memory_failover_resources_percent: 25
+      register: ha_result
+      delegate_to: localhost
+
+    - name: Enable DRS and set default VM behavior to fully automated
+      community.vmware.vmware_cluster_drs:
+        validate_certs: no
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        datacenter_name: '{{ datacenter_name }}'
+        cluster_name: "{{ cluster_name_compute }}"
+        enable: True
+        drs_default_vm_behavior: fullyAutomated
+      register: drs_result
+      delegate_to: localhost

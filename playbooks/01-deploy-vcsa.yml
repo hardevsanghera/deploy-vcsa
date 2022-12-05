@@ -1,0 +1,44 @@
+---
+- hosts: localhost
+  name: Deploy the VCSA to an ESXi Host
+  gather_facts: false
+  vars_files: ../answerfile.yml
+
+  tasks:
+    - community.vmware.vmware_deploy_ovf:
+        hostname: "{{ esxi_ip_address }}"
+        username: "{{ esxi_username }}"
+        password: "{{ esxi_password }}"
+        deployment_option: "{{ vcsa_size }}"
+        name: "{{ vcenter_virtual_machine_name }}" # Virtual Machine name in ESXI, NOT FQDN
+        ovf: "{{ vcsa_ova_file }}"
+        wait_for_ip_address: true
+        validate_certs: no
+        inject_ovf_env: true
+        datastore: "{{ datastore }}" # vmContainer1 for the West ESXi cluster
+        networks: "{u'Network 1':u'{{ esxi_network }}'}"
+        properties:
+          guestinfo.cis.appliance.net.addr.family: "ipv4" # ipv4 or ipv6
+          guestinfo.cis.appliance.net.mode: "static" # static or dhcp
+          guestinfo.cis.appliance.net.addr: "{{ vcenter_net_ip_address }}"
+          guestinfo.cis.appliance.net.pnid: "{{ vcenter_hostname }}" 
+          guestinfo.cis.appliance.net.prefix: "{{ vcenter_net_prefix }}" # netmask length, CIDR notation, eg. '25'
+          guestinfo.cis.appliance.net.gateway: "{{ vcenter_net_gateway }}"
+          guestinfo.cis.appliance.net.dns.servers: "{{ vcenter_dns_servers }}" # Comma separated list of IP addresses of DNS servers.
+          guestinfo.cis.appliance.root.passwd: "{{ vcenter_password }}"
+          guestinfo.cis.ceip_enabled: "False"
+          guestinfo.cis.deployment.autoconfig: "True" # Auto-configure after deployment
+          guestinfo.cis.vmdir.username: "{{ vcenter_username }}"
+          guestinfo.cis.vmdir.password: "{{ vcenter_password }}" # SSO Password for administrator@vsphere.local
+          guestinfo.cis.appliance.ntp.servers: "us.pool.ntp.org"
+          guestinfo.cis.appliance.ssh.enabled: "True"
+          searchpath: "{{ searchpath }}"
+      delegate_to: localhost
+
+    - name: Time now follows - about to pause
+      debug:
+        msg="{{ lookup('pipe', 'date') }}"
+   
+    - name: Pause for 40 Minutes to wait for VCSA deployment and configuration completion
+      pause: 
+        minutes: 40

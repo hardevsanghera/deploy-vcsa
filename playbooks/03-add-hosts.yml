@@ -1,0 +1,28 @@
+---
+- hosts: localhost
+  name: Add Hosts to vCenter
+  gather_facts: false
+  vars_files: ../answerfile.yml
+
+  tasks:
+    - name: Add ESXi Hosts to vCenter
+      community.vmware.vmware_host:
+        validate_certs: no
+        hostname: '{{ vcenter_hostname }}'
+        username: '{{ vcenter_username }}'
+        password: '{{ vcenter_password }}'
+        datacenter_name: '{{ datacenter_name }}'
+        cluster: '{{ cluster_name_compute }}'
+        esxi_hostname: "{{ item }}"
+        esxi_username: '{{ esxi_username }}'
+        esxi_password: '{{ esxi_password }}'
+        force_connection: True
+        add_connected: True
+        state: present
+      register: ho_result
+      delegate_to: localhost
+      with_items:
+        -  "{{ esxi_compute_01_fqdn }}" # From answerfile.yml, these are IP addresses and NOT FQDNs
+        -  "{{ esxi_compute_02_fqdn }}"
+        -  "{{ esxi_compute_03_fqdn }}"
+        -  "{{ esxi_compute_04_fqdn }}"

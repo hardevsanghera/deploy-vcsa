@@ -1,0 +1,23 @@
+## ESXI VARIABLES ##
+esxi_username: 'root'
+esxi_ip_address: '10.99.220.25'
+esxi_compute_01_fqdn: '10.99.220.25'
+esxi_compute_02_fqdn: '10.99.220.26'
+esxi_compute_03_fqdn: '10.99.220.27'
+esxi_compute_04_fqdn: '10.99.220.28'
+esxi_password: 'Nutanix/4u'
+vcenter_password: 'Nutanix/4u'
+vcenter_username: 'administrator@vsphere.local'
+vcenter_virtual_machine_name: 'VCSA7'
+vcenter_hostname: '10.99.220.40'
+vcenter_net_ip_address: '10.99.220.40'
+vcenter_net_prefix: '25'
+vcenter_net_gateway: '10.99.220.1'
+vcenter_dns_servers: '10.99.98.10'
+searchpath: ""
+vcsa_size: 'xlarge' # 24 vCPU, 56GB RAM, lots of disks!
+vcsa_ova_file: '/TEMP/vCenter/VCSA/VMware-vCenter-Server-Appliance-7.0.3.00600-19717403_OVF10.ova'
+datastore: 'vmContainer1'
+esxi_network: 'VM Network'
+datacenter_name: 'PHX-HPOC'
+cluster_name_compute: 'PHX-POC999'
