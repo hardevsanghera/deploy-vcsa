@@ -1,12 +1,13 @@
 hardev@nutanix.com
 # December 2022
 # Acknowledgements: https://github.com/vPackets/ANSIBLE-vSphere-VCSA-OVA-Deploy
-# I customized the above playbooks for HPOCs - original README is included for reference and installtion of Ansible hints.
+# I customized the above playbooks for HPOCs - original README is included for reference and installation of Ansible hints.
 # These playbooks will deploy a vmWare VCSA 7 to a Nutanix HPOC, it assumes that 4 ESXi nodes are available.
 # The following is performed:
+# ** ENSURE YOU ARE PROPERLEY LICENSED AND OBSERVE ALL EULAs **
 # 1. Deploy VCSA - you will need a VCSA .ova file, to get one you can mount a VCSA .iso and then copy the .ova from the vcsa folder 
 #    from the mount point.  This is the only file I needed, no separate manifest or disk images.
-#    The VCSA is seployed to datastore vmContiner1 - which is as per the original West cluster setup, this datastore ust be present.
+#    The VCSA is seployed to datastore vmContainer1 - which is as per the original cluster setup, this datastore must be present.
 # 2. Perform customization of the VCSA:
 #    a. Create Datacenter
 #    b. Create Cluster
@@ -18,7 +19,7 @@ hardev@nutanix.com
 # 3. Add 4 ESXi nodes to the vCenter Cluster NOTE: This is forced - so if the nodes are being managed by
 #    another vCenter they will be snatched away.
 #
-# You can now add the vCenter to PE/PC - I found that for the West clusters if you use the same IP addresses (recommended) then PE/PC
+# You can now add the vCenter to PE/PC - I found that for the west clusters if you use the same IP addresses (recommended) then PE/PC
 # will re-connect themselves.
 #
 # Additional customizations to be carried out - these are as per vSphere Administration Guide for Acropolis
